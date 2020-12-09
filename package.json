@@ -1,0 +1,23 @@
+{
+  "name": "isap-smartface-engine",
+  "version": "1.00.00",
+  "config": {
+    "displayname": "iSap SmartFace Engine"
+  },
+  "description": "iSap SmartFace Engine v1.00.00",
+  "scripts": {
+    "start": "npm start --prefix ./../",
+    "debug": "npm run debug --prefix ./../",
+    "clean": "npm run clean --prefix ./../",
+    "create-project": "git checkout --orphan"
+  },
+  "author": "",
+  "license": "private",
+  "dependencies": {
+    "express-http-context": "^1.2.4",
+    "express-ntlm": "^2.5.2",
+    "node-sspi": "^0.2.8",
+    "passport": "^0.4.1",
+    "passport-windowsauth": "^3.0.1"
+  }
+}
