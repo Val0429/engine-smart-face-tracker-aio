@@ -9,7 +9,8 @@ import * as path from 'path';
 
 import * as express from 'express';
 // app.use('/files', express.static(`${__dirname}/custom/files`));
-app.use('/snapshot', express.static(`${__dirname}/custom/assets/snapshots`));
+// app.use('/snapshot', express.static(`${__dirname}/custom/assets/snapshots`));
+app.use('/snapshot', express.static(path.resolve(process.cwd(), "./workspace/custom/assets/snapshots")));
 
 Log.setLevel(Level.Trace);
 
@@ -17,8 +18,8 @@ Log.setLevel(Level.Trace);
 console.time("Valxnet Initial Time");
 ValFRSInit({
     paths: {
-        db: path.resolve(__dirname, "./custom/modules/valxnet/build/data/val.bin"),
-        model: path.resolve(__dirname, "./custom/modules/valxnet/build/Release")
+        db: path.resolve(process.cwd(), "./workspace/custom/modules/valxnet/build/data/val.bin"),
+        model: path.resolve(process.cwd(), "./workspace/custom/modules/valxnet/build/Release")
     }
 });
 console.timeEnd("Valxnet Initial Time");

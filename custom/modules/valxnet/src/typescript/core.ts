@@ -194,14 +194,18 @@ export interface IOutputPagingBase {
 }
 
 /// Helper Functions
-export function ValDisposeAll(obj: any) {
-    if (obj == null) return;
-    if (Array.isArray(obj)) {
-        obj.forEach(v => ValDisposeAll(v));
-    } else {
-        if (obj.dispose) {
-            obj.dispose();
-        }
-    }
-}
+// export function ValDisposeAll(obj: any) {
+//     if (obj == null) return;
+//     if (Array.isArray(obj)) {
+//         obj.forEach(v => ValDisposeAll(v));
+//     } else {
+//         if (obj.dispose) {
+//             obj.dispose();
+//         }
+//     }
+// }
 
+export function ValDisposeAll(...obj: any[]) {
+    if (obj.length === 0) return;
+    obj.forEach(v => v.dispose && v.dispose());
+}

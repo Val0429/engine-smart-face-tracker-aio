@@ -1,11 +1,10 @@
 import {
-    Restful, Action
+    Restful, Action, idGenerate
 } from "core/cgi-package";
 import { ValFaceCapture, ValFaceFeature, ValDisposeAll, ISharedFeature, ISharedCapturedFace, EImageEncodeFormatType, EFaceFeatureSnapshotType } from "workspace/custom/modules/valxnet";
 import { IExtractedInfo } from "workspace/custom/models/extracted-info";
 
 import * as path from 'path';
-import * as shortid from 'shortid';
 
 var action = new Action({
     loginRequired: false
@@ -35,7 +34,8 @@ interface IOutputFeature {
 type InputC = Restful.InputC<IInputFeature>;
 type OutputC = Restful.OutputC<IOutputFeature>;
 
-const snapshotPath = path.resolve(__dirname, "../../custom/assets/snapshots");
+// const snapshotPath = path.resolve(__dirname, "../../custom/assets/snapshots");
+const snapshotPath = path.resolve(process.cwd(), "./workspace/custom/assets/snapshots");
 
 let fc: ValFaceCapture;
 let ff: ValFaceFeature;
@@ -66,10 +66,10 @@ action.post<InputC, OutputC>({ inputType: "InputC", postSizeLimit: 1024*1024*10 
             features = await ff.extract(detects);
             for (let i=0; i<features.length; ++i) {
                 let featureObject = features[i];
-                let imageUri = await featureObject.saveFile({ path: snapshotPath, postfix: shortid.generate(), encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
+                let imageUri = await featureObject.saveFile({ path: snapshotPath, postfix: idGenerate(), encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
                 imageUri = path.basename(imageUri);
 
-                let feature = await featureObject.getBuffer({ snapshotType: EFaceFeatureSnapshotType.feature, base64: true });
+                let feature = await featureObject.getBuffer({ snapshotType: EFaceFeatureSnapshotType.feature, base64: true, base64AsString: true });
                 let imageRect = featureObject.getSize({ snapshotType: EFaceFeatureSnapshotType.image });
                 let faceRect = featureObject.getSize({ snapshotType: EFaceFeatureSnapshotType.face });
                 let confidenceScore = toFixedNumber(featureObject.score, 3);

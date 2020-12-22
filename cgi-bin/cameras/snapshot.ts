@@ -18,7 +18,8 @@ interface IInputSnapshot {
 type InputC = Restful.InputC<IInputSnapshot>;
 type OutputC = Restful.OutputC<any>;
 
-const snapshotPath = path.resolve(__dirname, "../../custom/assets/snapshots");
+// const snapshotPath = path.resolve(__dirname, "../../custom/assets/snapshots");
+const snapshotPath = path.resolve(process.cwd(), "./workspace/custom/assets/snapshots");
 
 action.get<InputC, OutputC>({ inputType: "InputC" }, async (data) => {
     let { imageUri } = data.inputType;

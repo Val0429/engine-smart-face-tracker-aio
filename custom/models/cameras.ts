@@ -1,6 +1,6 @@
 import { registerSubclass, ParseObject } from 'helpers/parse-server/parse-helper';
 
-import { ValRtspConnector, ValFaceCapture, ValFaceFeature, ValDisposeAll, ISharedCapturedFace, EImageEncodeFormatType, EFaceSnapshotType, ISharedFeature, EFaceFeatureSnapshotType } from 'workspace/custom/modules/valxnet';
+import { ValRtspConnector, ValFaceCapture, ValFaceFeature, ValDisposeAll, ISharedCapturedFace, EImageEncodeFormatType, EFaceSnapshotType, ISharedFeature, EFaceFeatureSnapshotType, ELogLevel, EFrameSnapshotType } from 'workspace/custom/modules/valxnet';
 
 export enum EType {
     rtsp,
@@ -83,15 +83,15 @@ export let CameraList: { [objectId: string]: ValCameraReceiver } = {};
 // ////////////////////////////////////////////////////
 
 import { URL } from "url";
-import { Log } from 'helpers/utility';
+import { Log, idGenerate } from 'helpers/utility';
 import { Subject } from 'rxjs';
 import { ICameraLive } from './camera-live';
-import * as shortid from 'shortid';
 import * as path from 'path';
 import * as fs from 'fs';
 
 export const sjCameraLive: Subject<ICameraLive> = new Subject<ICameraLive>();
-const snapshotPath = path.resolve(__dirname, "../assets/snapshots");
+// const snapshotPath = path.resolve(__dirname, "../assets/snapshots");
+const snapshotPath = path.resolve(process.cwd(), "./workspace/custom/assets/snapshots");
 if (!fs.existsSync(snapshotPath)) fs.mkdirSync(snapshotPath);
 
 const LogTitle = "ValCameraReceiver";
@@ -104,10 +104,12 @@ export class ValCameraReceiver {
         let ionly = config.ionly || true;
 
         let fc = new ValFaceCapture();
+        // fc.logLevel = ELogLevel.trace;
         let ff = new ValFaceFeature();
 
         let url = new URL(attrs.rtspUrl);
-        this.device = new ValRtspConnector({ ip: url.hostname, port: parseInt(url.port, 10), account: url.username, password: url.password, uri: url.pathname, ionly });
+        this.device = new ValRtspConnector({ ip: url.hostname, port: parseInt(url.port, 10), account: url.username, password: url.password, uri: `${url.pathname}${url.search || ""}`, ionly });
+        // this.device.logLevel = ELogLevel.trace;
         this.device.subscribe(async (streamObject) => {
             try {
                 let detects: ISharedCapturedFace[];
@@ -120,6 +122,13 @@ export class ValCameraReceiver {
                         maxYawAngle: config.fcMaxYawAngle,
                         minFaceLength: config.fcMinFaceLength
                     });
+                    // console.log("detected:", detects.length);
+                    // /// save the image to see something
+                    // await streamObject.saveFile({
+                    //     snapshotType: EFrameSnapshotType.frame,
+                    //     path: path.resolve(__dirname, "../tmp"),
+                    //     withTimestamp: true
+                    // });
                     if (detects.length === 0) return;
 
                     let features: ISharedFeature[];
@@ -127,7 +136,7 @@ export class ValCameraReceiver {
                         features = await ff.extract(detects);
                         for (let i=0; i<features.length; ++i) {
                             let featureObject = features[i];
-                            let imageUri = await featureObject.saveFile({ path: snapshotPath, postfix: shortid.generate(), encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
+                            let imageUri = await featureObject.saveFile({ path: snapshotPath, postfix: idGenerate(), encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
                             imageUri = path.basename(imageUri);
 
                             let feature = await featureObject.getBuffer({ snapshotType: EFaceFeatureSnapshotType.feature, base64: true, base64AsString: true });
