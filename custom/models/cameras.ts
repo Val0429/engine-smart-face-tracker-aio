@@ -39,6 +39,8 @@ export type ICameraCMS3 = {
 
 export interface ICamerasBase {
     name: string;
+    /// default: true
+    enable?: boolean;
 }
 
 export type ICameras = ICamerasBase &
@@ -63,20 +65,23 @@ export let CameraList: { [objectId: string]: ValCameraReceiver } = {};
         let cam: any = camera;
         let objectId = cam.objectId || cam.id;
         let config = camera instanceof Cameras ? camera.attributes : camera;
+        let enable = config.enable === undefined ? true : config.enable;
         /// update when:
         /// 1) sync added
         /// 2) sync deleted
         /// 3) modified account / password
         this.delete(objectId);
-        let instance = CameraList[objectId] = new ValCameraReceiver(camera);
-        instance.start();
+        if (enable) {
+            let instance = CameraList[objectId] = new ValCameraReceiver(camera);
+            instance.start();
+        }
     }
 
     static async delete(cameraid: string);
     static async delete(camera: Cameras);
     static async delete(camera: string | Cameras) {
         if (camera instanceof Cameras) camera = camera.id;
-        CameraList[camera] && CameraList[camera].stop();
+        CameraList[camera] && CameraList[camera].dispose();
         delete CameraList[camera];
     }
 }
@@ -84,7 +89,7 @@ export let CameraList: { [objectId: string]: ValCameraReceiver } = {};
 
 import { URL } from "url";
 import { Log, idGenerate } from 'helpers/utility';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { ICameraLive } from './camera-live';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -97,11 +102,12 @@ if (!fs.existsSync(snapshotPath)) fs.mkdirSync(snapshotPath);
 const LogTitle = "ValCameraReceiver";
 export class ValCameraReceiver {
     device: ValRtspConnector;
+    subscription: Subscription;
     constructor(camera: Cameras) {
         let cameraId = camera.id;
         let attrs = camera.attributes;
         let config = attrs.config || {};
-        let ionly = config.ionly || true;
+        let ionly = config.ionly === undefined ? true : config.ionly;
 
         let fc = new ValFaceCapture();
         // fc.logLevel = ELogLevel.trace;
@@ -110,7 +116,7 @@ export class ValCameraReceiver {
         let url = new URL(attrs.rtspUrl);
         this.device = new ValRtspConnector({ ip: url.hostname, port: parseInt(url.port, 10), account: url.username, password: url.password, uri: `${url.pathname}${url.search || ""}`, ionly });
         // this.device.logLevel = ELogLevel.trace;
-        this.device.subscribe(async (streamObject) => {
+        this.subscription = this.device.subscribe(async (streamObject) => {
             try {
                 let detects: ISharedCapturedFace[];
                 let datetime: Date = new Date();
@@ -179,6 +185,10 @@ export class ValCameraReceiver {
     }
     stop() {
         this.device.Stop();
+    }
+    dispose() {
+        this.stop();
+        this.subscription.unsubscribe();
     }
 }
 

@@ -5,7 +5,8 @@ var config: Partial<Config> = {
     port: 6070,
     disableCache: true,
     accessControlAllowOrigin: true,
-    cgiPath: ""
+    cgiPath: "",
+    restrictToLocal: true
 };
 export default config;
 export { Config };
