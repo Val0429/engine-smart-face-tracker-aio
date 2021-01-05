@@ -104,8 +104,9 @@ let prevTimeValue: number;
 function makeSnapshotPathWithTimestamp(): string {
     let now = new Date();
     let timezoneOffset = now.getTimezoneOffset() * 60;
-    let nowValue = Math.floor(now.valueOf() / 1000 + timezoneOffset);
-    let timeValue = nowValue - nowValue % 86400;
+    // let nowValue = Math.floor(now.valueOf() / 1000 - timezoneOffset);
+    let nowValue = Math.floor(now.valueOf() / 1000);
+    let timeValue = nowValue - nowValue % 86400 + timezoneOffset;
     let finalPath = path.resolve(snapshotPath, timeValue.toString());
     if (prevTimeValue === timeValue) {
         return finalPath;
