@@ -7,8 +7,10 @@
 import {
     express, Request, Response, Router,
     IRole, IUser, RoleList,
-    Action, Errors, sjCameraLive,
+    Action, Errors, sjCameraLive, Log,
 } from 'core/cgi-package';
+
+const logTitle: string = "CameraLiveConnection";
 
 export default new Action<any>({
     loginRequired: false
@@ -16,6 +18,7 @@ export default new Action<any>({
 .ws(async (data) => {
     let socket = data.socket;
 
+    Log.Trace(logTitle, "Connected.");
     let subscription = sjCameraLive.subscribe((live) => {
         try {
             socket.send( JSON.stringify(live) );
@@ -23,6 +26,11 @@ export default new Action<any>({
     });
 
     socket.io.on("close", () => {
+        Log.Trace(logTitle, "Closed.");
+        subscription.unsubscribe();
+    });
+    socket.io.on("error", () => {
+        Log.Trace(logTitle, "Error.");
         subscription.unsubscribe();
     });
 

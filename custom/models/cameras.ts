@@ -99,6 +99,22 @@ export const sjCameraLive: Subject<ICameraLive> = new Subject<ICameraLive>();
 const snapshotPath = path.resolve(process.cwd(), "./workspace/custom/assets/snapshots");
 if (!fs.existsSync(snapshotPath)) fs.mkdirSync(snapshotPath);
 
+let snapshotTsPath: string;
+let prevTimeValue: number;
+function makeSnapshotPathWithTimestamp(): string {
+    let now = new Date();
+    let timezoneOffset = now.getTimezoneOffset() * 60;
+    let nowValue = Math.floor(now.valueOf() / 1000 + timezoneOffset);
+    let timeValue = nowValue - nowValue % 86400;
+    let finalPath = path.resolve(snapshotPath, timeValue.toString());
+    if (prevTimeValue === timeValue) {
+        return finalPath;
+    }
+    prevTimeValue = timeValue;
+    if (!fs.existsSync(finalPath)) fs.mkdirSync(finalPath);
+    return finalPath;
+}
+
 const LogTitle = "ValCameraReceiver";
 export class ValCameraReceiver {
     device: ValRtspConnector;
@@ -117,6 +133,7 @@ export class ValCameraReceiver {
         this.device = new ValRtspConnector({ ip: url.hostname, port: parseInt(url.port, 10), account: url.username, password: url.password, uri: `${url.pathname}${url.search || ""}`, ionly });
         // this.device.logLevel = ELogLevel.trace;
         this.subscription = this.device.subscribe(async (streamObject) => {
+            let finalPath: string = makeSnapshotPathWithTimestamp();
             try {
                 let detects: ISharedCapturedFace[];
                 let datetime: Date = new Date();
@@ -142,8 +159,9 @@ export class ValCameraReceiver {
                         features = await ff.extract(detects);
                         for (let i=0; i<features.length; ++i) {
                             let featureObject = features[i];
-                            let imageUri = await featureObject.saveFile({ path: snapshotPath, postfix: idGenerate(), encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
-                            imageUri = path.basename(imageUri);
+                            let idgen = idGenerate();
+                            let imageUri = await featureObject.saveFile({ path: finalPath, postfix: idgen, encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
+                            imageUri = path.join(path.basename(finalPath), path.basename(imageUri));
 
                             let feature = await featureObject.getBuffer({ snapshotType: EFaceFeatureSnapshotType.feature, base64: true, base64AsString: true });
                             let imageRect = featureObject.getSize({ snapshotType: EFaceFeatureSnapshotType.image });

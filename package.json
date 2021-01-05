@@ -19,5 +19,45 @@
     "node-sspi": "^0.2.8",
     "passport": "^0.4.1",
     "passport-windowsauth": "^3.0.1"
-  }
+  },
+  "pkg": {
+    "assets": [
+      "**/*",
+      "!custom/assets/**/*",
+      "!custom/license/**/*",
+      "!custom/files/**/*",
+      "!custom/modules/valxnet/build/data/**/*"
+    ],
+    "inplaces": [
+      "custom/assets/**/*",
+      "custom/license/**/*",
+      "custom/files/**/*",
+      "custom/modules/valxnet/build/data/**/*",
+      "custom/modules/valxnet/build/Release/models/**/*"      
+    ],
+    "natives": {
+      "custom/modules/valxnet/build/Release/valxnet.node": "./",
+      "custom/modules/valxnet/build/Release/avcodec-58.dll": "./",
+      "custom/modules/valxnet/build/Release/avdevice-58.dll": "./",
+      "custom/modules/valxnet/build/Release/avfilter-7.dll": "./",
+      "custom/modules/valxnet/build/Release/avformat-58.dll": "./",
+      "custom/modules/valxnet/build/Release/avutil-56.dll": "./",
+      "custom/modules/valxnet/build/Release/mkl_avx2.dll": "./",
+      "custom/modules/valxnet/build/Release/mkl_avx512.dll": "./",
+      "custom/modules/valxnet/build/Release/mkl_core.dll": "./",
+      "custom/modules/valxnet/build/Release/mkl_rt.dll": "./",
+      "custom/modules/valxnet/build/Release/opencv_core430.dll": "./",
+      "custom/modules/valxnet/build/Release/opencv_highgui430.dll": "./",
+      "custom/modules/valxnet/build/Release/opencv_imgcodecs430.dll": "./",
+      "custom/modules/valxnet/build/Release/swresample-3.dll": "./",
+      "custom/modules/valxnet/build/Release/swscale-5.dll": "./",
+      "custom/modules/valxnet/build/Release/tbb.dll": "./",
+      "custom/modules/valxnet/build/Release/tvm.dll": "./",
+      "custom/modules/valxnet/build/Release/tvm_runtime.dll": "./",
+      "custom/modules/valxnet/build/Release/tvm_topi.dll": "./",
+      "custom/modules/valxnet/build/Release/models/MXNet/deploy_graph_0.json": "./",
+      "custom/modules/valxnet/build/Release/models/MXNet/deploy_lib_0.dll": "./",
+      "custom/modules/valxnet/build/Release/models/MXNet/deploy_param_0.params": "./"
+    }    
+  }  
 }
