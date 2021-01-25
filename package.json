@@ -14,15 +14,12 @@
   "author": "",
   "license": "private",
   "dependencies": {
-    "express-http-context": "^1.2.4",
-    "express-ntlm": "^2.5.2",
-    "node-sspi": "^0.2.8",
-    "passport": "^0.4.1",
-    "passport-windowsauth": "^3.0.1"
   },
   "pkg": {
     "assets": [
       "**/*",
+      "!**/.git/**/*",
+      "!nsis/**/*",
       "!custom/assets/**/*",
       "!custom/license/**/*",
       "!custom/files/**/*",
@@ -30,6 +27,7 @@
     ],
     "inplaces": [
       "custom/assets/**/*",
+      "!custom/assets/snapshots/**/*",
       "custom/license/**/*",
       "custom/files/**/*",
       "custom/modules/valxnet/build/data/**/*",

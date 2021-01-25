@@ -43,7 +43,7 @@ export function scheduleDataRecycle() {
                 });
                 removals.forEach(file => {
                     let thisPath = path.resolve(filePath, file);
-                    Log.Info(logTitle, `path: ${thisPath}`);
+                    Log.Info(logTitle, `Path: ${thisPath}`);
                     rimraf(thisPath, { glob: false }, () => {});
                 });
             });

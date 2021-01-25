@@ -199,13 +199,16 @@ export interface IOutputPagingBase {
 //     if (Array.isArray(obj)) {
 //         obj.forEach(v => ValDisposeAll(v));
 //     } else {
-//         if (obj.dispose) {
-//             obj.dispose();
+//         if (obj.Dispose) {
+//             obj.Dispose();
 //         }
 //     }
 // }
 
 export function ValDisposeAll(...obj: any[]) {
     if (obj.length === 0) return;
-    obj.forEach(v => v.dispose && v.dispose());
+    obj.forEach(v => {
+        if (Array.isArray(v)) return ValDisposeAll(...v);
+        v && v.dispose && v.dispose();
+    });
 }
