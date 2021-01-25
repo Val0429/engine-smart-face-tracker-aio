@@ -1,10 +1,10 @@
 {
   "name": "isap-smartface-engine",
-  "version": "1.00.03",
+  "version": "1.00.04",
   "config": {
     "displayname": "iSap SmartFace Engine"
   },
-  "description": "iSap SmartFace Engine v1.00.03",
+  "description": "iSap SmartFace Engine v1.00.04",
   "scripts": {
     "start": "npm start --prefix ./../",
     "debug": "npm run debug --prefix ./../",
@@ -13,8 +13,7 @@
   },
   "author": "",
   "license": "private",
-  "dependencies": {
-  },
+  "dependencies": {},
   "pkg": {
     "assets": [
       "**/*",
@@ -31,7 +30,7 @@
       "custom/license/**/*",
       "custom/files/**/*",
       "custom/modules/valxnet/build/data/**/*",
-      "custom/modules/valxnet/build/Release/models/**/*"      
+      "custom/modules/valxnet/build/Release/models/**/*"
     ],
     "natives": {
       "custom/modules/valxnet/build/Release/valxnet.node": "./",
@@ -56,6 +55,6 @@
       "custom/modules/valxnet/build/Release/models/MXNet/deploy_graph_0.json": "./",
       "custom/modules/valxnet/build/Release/models/MXNet/deploy_lib_0.dll": "./",
       "custom/modules/valxnet/build/Release/models/MXNet/deploy_param_0.params": "./"
-    }    
-  }  
+    }
+  }
 }

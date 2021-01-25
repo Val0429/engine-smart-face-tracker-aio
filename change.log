@@ -1,3 +1,7 @@
+2021-01-25 10:27:59 -> author: Val Liu , message: v1.00.04
+2021-01-25 10:06:52 -> author: Val     , message: resolved memory leak
+2021-01-05 16:54:49 -> author: Val     , message: data recycle for snapshots
+2021-01-05 15:51:20 -> author: Val     , message: add timestamp to snapshot save file
 2020-12-30 13:54:20 -> author: Val Liu , message: v1.00.03
 2020-12-30 13:53:37 -> author: Val Liu , message: * add enable | disable state to Cameras.* apply ionly to Cameras.* server retrict to localhost by default. other ip will be denied.
 2020-12-29 15:32:40 -> author: Val Liu , message: v1.00.02
