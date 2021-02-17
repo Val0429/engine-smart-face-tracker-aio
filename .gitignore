@@ -3,3 +3,4 @@ custom/web/
 custom/assets/snapshots/
 custom/modules/valxnet/build/data
 node_modules/
+package-lock.json

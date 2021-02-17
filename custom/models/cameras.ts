@@ -43,6 +43,18 @@ export interface ICamerasBase {
     enable?: boolean;
 }
 
+function padLeft(input: string | number, digits: number, letter: string = "0"): string {
+    if (typeof input === 'number') input = input + "";
+    return input.length >= digits ? input : Array(digits-input.length).fill(letter).join("") + input;
+}
+
+function timestamp(): string {
+    let now = new Date();
+    return `${'['.grey}` +
+           `${now.getMonth()+1}/${padLeft(now.getDate(),2)} ${padLeft(now.getHours(),2)}:${padLeft(now.getMinutes(),2)}:${padLeft(now.getSeconds(),2)}.${padLeft(now.getMilliseconds(),3)}`.cyan +
+           `${']'.grey} `;
+}
+
 export type ICameras = ICamerasBase &
     ICameraRTSP;
     // (ICameraRTSP | ICameraCMS3);
@@ -99,22 +111,28 @@ export const sjCameraLive: Subject<ICameraLive> = new Subject<ICameraLive>();
 const snapshotPath = path.resolve(process.cwd(), "./workspace/custom/assets/snapshots");
 if (!fs.existsSync(snapshotPath)) fs.mkdirSync(snapshotPath);
 
-let snapshotTsPath: string;
-let prevTimeValue: number;
+let prevSnapshotPath: string;
+let sliceInterval: number = 60*10;  /// 10 minutes
 function makeSnapshotPathWithTimestamp(): string {
     let now = new Date();
     let timezoneOffset = now.getTimezoneOffset() * 60;
     // let nowValue = Math.floor(now.valueOf() / 1000 - timezoneOffset);
     let nowValue = Math.floor(now.valueOf() / 1000);
-    let timeValue = nowValue - nowValue % 86400 + timezoneOffset;
-    let finalPath = path.resolve(snapshotPath, timeValue.toString());
-    if (prevTimeValue === timeValue) {
+    let remainder = nowValue % 86400;
+    let timeValue = nowValue - remainder + timezoneOffset;
+    let sliceValue = Math.floor(remainder / sliceInterval);
+    let finalPath = path.resolve(snapshotPath, timeValue.toString(), sliceValue.toString());
+    if (prevSnapshotPath === finalPath) {
         return finalPath;
     }
-    prevTimeValue = timeValue;
-    if (!fs.existsSync(finalPath)) fs.mkdirSync(finalPath);
+    prevSnapshotPath = finalPath;
+    if (!fs.existsSync(finalPath)) {
+        fs.mkdirSync(finalPath, { recursive: true });
+    }
     return finalPath;
 }
+
+let debug = false, total = 0, total2 = 0;
 
 const LogTitle = "ValCameraReceiver";
 export class ValCameraReceiver {
@@ -135,6 +153,10 @@ export class ValCameraReceiver {
         // this.device.logLevel = ELogLevel.trace;
         this.subscription = this.device.subscribe(async (streamObject) => {
             let finalPath: string = makeSnapshotPathWithTimestamp();
+
+            /// for debug
+            let frameMsg, tmptotal; if (debug) { tmptotal = ++total; frameMsg = `${timestamp()} frame begin ${tmptotal}`; console.log(frameMsg); console.time(frameMsg); }
+
             try {
                 let detects: ISharedCapturedFace[];
                 let datetime: Date = new Date();
@@ -161,8 +183,15 @@ export class ValCameraReceiver {
                         for (let i=0; i<features.length; ++i) {
                             let featureObject = features[i];
                             let idgen = idGenerate();
+
+                            /// for debug
+                            let fileMsg; if (debug) { let tmptotal2 = ++total2; fileMsg = `${timestamp()} file begin (${tmptotal}) ${tmptotal2}`; console.log(fileMsg); console.time(fileMsg); }
+                            
                             let imageUri = await featureObject.saveFile({ path: finalPath, postfix: idgen, encodeType: EImageEncodeFormatType.jpg, snapshotType: EFaceFeatureSnapshotType.image });
-                            imageUri = path.join(path.basename(finalPath), path.basename(imageUri));
+                            imageUri = path.relative(snapshotPath, imageUri);
+
+                            /// for debug
+                            debug && console.timeEnd(fileMsg);
 
                             let feature = await featureObject.getBuffer({ snapshotType: EFaceFeatureSnapshotType.feature, base64: true, base64AsString: true });
                             let imageRect = featureObject.getSize({ snapshotType: EFaceFeatureSnapshotType.image });
@@ -195,7 +224,9 @@ export class ValCameraReceiver {
 
             }
             catch (e) { Log.Error(LogTitle, `streamObject catch error: ${e}`) }
-            finally { ValDisposeAll(streamObject) };
+            finally { ValDisposeAll(streamObject);
+                debug && console.timeEnd(frameMsg);
+            };
         });
     }
 
