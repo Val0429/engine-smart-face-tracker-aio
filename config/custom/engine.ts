@@ -1,7 +1,7 @@
 import { DBConfig } from "helpers/config/db-config";
 
 var config = DBConfig<Config>({
-    dataRetensionDays: 365
+    dataRetensionDays: 60
 });
 export default config;
 
