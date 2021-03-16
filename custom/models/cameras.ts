@@ -149,7 +149,14 @@ export class ValCameraReceiver {
         let ff = new ValFaceFeature();
 
         let url = new URL(attrs.rtspUrl);
-        this.device = new ValRtspConnector({ ip: url.hostname, port: parseInt(url.port, 10), account: url.username, password: url.password, uri: `${url.pathname}${url.search || ""}`, ionly });
+        this.device = new ValRtspConnector({
+            ip: url.hostname,
+            port: parseInt(url.port, 10),
+            account: url.username,
+            password: url.password,
+            uri: `${url.pathname}${url.search || ""}`,
+            ionly
+        });
         // this.device.logLevel = ELogLevel.trace;
         this.subscription = this.device.subscribe(async (streamObject) => {
             let finalPath: string = makeSnapshotPathWithTimestamp();

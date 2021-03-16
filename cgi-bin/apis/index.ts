@@ -131,6 +131,7 @@ action.get( async (data) => {
     }
 
     return {
+        serverName: packinfo.name,
         serverVersion: packinfo.version,
         frameworkVersion: packinfo.frameworkversion,
         APIs: final
