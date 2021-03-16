@@ -1,4 +1,7 @@
-2021-03-04 16:27:35 -> author: Val.Liu , message: v1.00.05
+2021-03-16 14:41:11 -> author: Val.Liu , message: v1.01.01
+2021-03-16 14:40:49 -> author: Val.Liu , message: upgrade to v1.1
+2021-03-16 14:38:44 -> author: Val.Liu , message: mask-enhance model as default
+2021-03-04 16:27:36 -> author: Val.Liu , message: v1.00.05
 2021-03-04 16:27:10 -> author: Val.Liu , message: * update latest valxnet.
 2021-03-04 16:10:43 -> author: Val.Liu , message: * dataRetension default to 60.
 2021-02-20 09:51:51 -> author: Val     , message: make cgiPath default to api
