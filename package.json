@@ -1,10 +1,10 @@
 {
   "name": "isap-smartface-engine",
-  "version": "1.00.05",
+  "version": "1.01.00",
   "config": {
     "displayname": "iSap SmartFace Engine"
   },
-  "description": "iSap SmartFace Engine v1.00.05",
+  "description": "iSap SmartFace Engine v1.01.00",
   "scripts": {
     "start": "npm start --prefix ./../",
     "debug": "npm run debug --prefix ./../",
