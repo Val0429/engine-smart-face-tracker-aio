@@ -10,7 +10,7 @@ export enum EType {
 export interface ICameraRTSPConfig {
     /// default: true. only decode iframe. false to decode all.
     ionly?: boolean;
-    /// default: 1 (second). not support right now.
+    /// default: 1 (second) if ionly false.
     captureInterval?: number;
     /// default: 0.99
     fcConfidenceScore?: number;
